@@ -1,0 +1,306 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Flood Risk - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-water"></i> Flood Risk Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/check-risk/">Check Risk</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/safety-tips/">Safety Tips</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/shelters/">Shelters</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/alerts/">Alerts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/report-damage/">Report Damage</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-flask"></i> Flood Risk Predictor</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="riskForm">
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Select District</strong></label>
+                                <select id="districtSelect" class="form-select" required>
+                                    <option value="">-- Choose District --</option>
+                                    {% for district in districts %}
+                                    <option value="{{ district.name }}">{{ district.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-calculator"></i> Predict Risk
+                            </button>
+                        </form>
+                        <div id="loading" style="display:none; margin-top:20px; text-align:center;">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <p>Fetching weather data and making prediction...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8" id="resultsContainer" style="display:none;">
+                <!-- Risk Result Card -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header text-white" id="resultHeader">
+                        <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Prediction Result</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Risk Level</h6>
+                                <p class="display-6" id="riskLevelDisplay"></p>
+                                <p id="riskConfidence"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <canvas id="probabilityChart" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Recommendations -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-shield"></i> Safety Recommendations</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul id="recommendationsList" class="list-group list-group-flush"></ul>
+                    </div>
+                </div>
+
+                <!-- Visualizations -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-line"></i> Input Sequences</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="sequenceImage"></div>
+                    </div>
+                </div>
+
+                <!-- Confidence Distribution -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Confidence Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="confidenceImage"></div>
+                    </div>
+                </div>
+
+                <!-- SHAP Explanation -->
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb"></i> SHAP Explanation</h5>
+                    </div>
+                    <div class="card-body">
+                        <p id="shapExplanation"></p>
+                        <div id="shapDetails"></div>
+                    </div>
+                </div>
+
+                <!-- LIME Explanation -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-brain"></i> LIME Explanation</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="limeDetails"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <p>&copy; 2024 Flood Risk Dashboard KPK</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const form = document.getElementById('riskForm');
+        const loading = document.getElementById('loading');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const district = document.getElementById('districtSelect').value;
+            
+            loading.style.display = 'block';
+            resultsContainer.style.display = 'none';
+
+            try {
+                const response = await fetch('/check-risk/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ district })
+                });
+
+                // Check if response is OK
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Response error:', errorText);
+                    alert(`Error: HTTP ${response.status}`);
+                    return;
+                }
+
+                // Parse JSON response
+                let data;
+                try {
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const text = await response.text();
+                        console.error('Invalid content type or response:', text.substring(0, 200));
+                        alert('Error: Server returned invalid response. Check browser console.');
+                        return;
+                    }
+                    data = await response.json();
+                } catch (parseError) {
+                    console.error('JSON Parse Error:', parseError);
+                    alert('Error: Could not parse server response');
+                    return;
+                }
+
+                if (data.success) {
+                    displayResults(data);
+                    resultsContainer.style.display = 'block';
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                alert('Error making prediction: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+
+        function displayResults(data) {
+            const pred = data.prediction;
+            const colors = ['#28a745', '#ffc107', '#fd7e14', '#dc3545'];
+            const labels = ['No Risk', 'Low', 'Medium', 'High'];
+
+            // Risk level
+            document.getElementById('riskLevelDisplay').innerHTML = 
+                `<span style="color: ${pred.color};">${pred.risk_label}</span>`;
+            document.getElementById('resultHeader').style.backgroundColor = pred.color;
+            document.getElementById('riskConfidence').innerHTML = 
+                `<strong>Confidence:</strong> ${pred.confidence}%`;
+
+            // Probability chart
+            const ctx = document.getElementById('probabilityChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: [
+                            pred.probabilities[0],
+                            pred.probabilities[1],
+                            pred.probabilities[2],
+                            pred.probabilities[3]
+                        ],
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            // Recommendations
+            const recList = document.getElementById('recommendationsList');
+            recList.innerHTML = '';
+            data.recommendations.forEach(rec => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.innerHTML = `<i class="fas fa-check"></i> ${rec}`;
+                recList.appendChild(li);
+            });
+
+            // Visualizations
+            if (data.visualizations && data.visualizations.sequence) {
+                document.getElementById('sequenceImage').innerHTML = 
+                    `<img src="${data.visualizations.sequence}" class="img-fluid">`;
+            } else {
+                document.getElementById('sequenceImage').innerHTML = 
+                    '<p class="text-muted">Visualization unavailable</p>';
+            }
+            if (data.visualizations && data.visualizations.confidence) {
+                document.getElementById('confidenceImage').innerHTML = 
+                    `<img src="${data.visualizations.confidence}" class="img-fluid">`;
+            } else {
+                document.getElementById('confidenceImage').innerHTML = 
+                    '<p class="text-muted">Visualization unavailable</p>';
+            }
+
+            // SHAP
+            const shapExp = data.shap.explanation;
+            document.getElementById('shapExplanation').textContent = 
+                `Base risk: Low | Features push risk ${data.prediction.risk_code > 1 ? 'UP' : 'DOWN'}`;
+            
+            let shapHTML = '<ul class="list-group">';
+            shapExp.forEach(exp => {
+                shapHTML += `<li class="list-group-item">${exp}</li>`;
+            });
+            shapHTML += '</ul>';
+            document.getElementById('shapDetails').innerHTML = shapHTML;
+
+            // LIME
+            let limeHTML = '<ul class="list-group">';
+            data.lime.local_rules.forEach(rule => {
+                limeHTML += `
+                    <li class="list-group-item">
+                        <strong>${rule.feature}:</strong> ${rule.condition}<br/>
+                        <small>${rule.impact} (weight: ${rule.weight})</small>
+                    </li>
+                `;
+            });
+            limeHTML += '</ul>';
+            document.getElementById('limeDetails').innerHTML = limeHTML;
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

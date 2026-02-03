@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Alerts - Flood Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-water"></i> Flood Risk Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/check-risk/">Check Risk</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/safety-tips/">Safety Tips</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/shelters/">Shelters</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/alerts/">Alerts</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/report-damage/">Report Damage</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <h1 class="mb-4"><i class="fas fa-bell"></i> Flood Alerts</h1>
+
+        {% if alerts %}
+            {% for alert in alerts %}
+            <div class="alert alert-{% if alert.severity == 3 %}danger{% elif alert.severity == 2 %}warning{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">
+                    {% if alert.severity == 3 %}<i class="fas fa-skull"></i> HIGH ALERT
+                    {% elif alert.severity == 2 %}<i class="fas fa-exclamation-triangle"></i> MEDIUM ALERT
+                    {% else %}<i class="fas fa-info-circle"></i> LOW ALERT
+                    {% endif %}
+                </h4>
+                <p><strong>{{ alert.district }}</strong></p>
+                <p>{{ alert.message }}</p>
+                <small>Source: {{ alert.source }} | Time: {{ alert.timestamp }}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> No active flood alerts at this time.
+            </div>
+        {% endif %}
+
+        <!-- Historical Alerts -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-history"></i> Alert History</h5>
+            </div>
+            <div class="card-body">
+                <p>Current Time: <strong>January 24, 2024 12:30 PM</strong></p>
+                <p>Last Update: <strong>January 24, 2024 11:45 AM</strong></p>
+                <p>System Status: <strong class="text-success">● Operational</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <p>&copy; 2024 Flood Risk Dashboard KPK</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

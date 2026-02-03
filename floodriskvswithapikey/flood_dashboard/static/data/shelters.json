@@ -1,0 +1,12 @@
+[
+  {"id": 1, "name": "Peshawar Emergency Center", "district": "Peshawar", "lat": 34.0085, "lon": 71.5769, "capacity": 500},
+  {"id": 2, "name": "Mardan Relief Shelter", "district": "Mardan", "lat": 34.1998, "lon": 72.0371, "capacity": 300},
+  {"id": 3, "name": "Swat Medical Camp", "district": "Swat", "lat": 34.7654, "lon": 72.4274, "capacity": 400},
+  {"id": 4, "name": "Mansehra Safety Hub", "district": "Mansehra", "lat": 34.3351, "lon": 73.1897, "capacity": 350},
+  {"id": 5, "name": "Charsadda Community Center", "district": "Charsadda", "lat": 34.1555, "lon": 71.7424, "capacity": 250},
+  {"id": 6, "name": "Abbottabad High School", "district": "Abbottabad", "lat": 34.1575, "lon": 73.2053, "capacity": 280},
+  {"id": 7, "name": "Nowshera Government Hall", "district": "Nowshera", "lat": 33.9833, "lon": 71.9815, "capacity": 200},
+  {"id": 8, "name": "Kohat Sports Complex", "district": "Kohat", "lat": 33.5806, "lon": 71.4314, "capacity": 220},
+  {"id": 9, "name": "DIK Emergency Base", "district": "Dera Ismail Khan", "lat": 31.8368, "lon": 71.4235, "capacity": 300},
+  {"id": 10, "name": "Chitral Rescue Center", "district": "Chitral", "lat": 35.8500, "lon": 71.7783, "capacity": 150}
+]

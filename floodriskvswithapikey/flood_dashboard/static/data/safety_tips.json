@@ -1,0 +1,48 @@
+{
+  "0": {
+    "title": "General Preparedness",
+    "tips": [
+      "Monitor weather reports daily",
+      "Maintain proper drainage in your home",
+      "Keep emergency contact numbers handy",
+      "Update first aid kit supplies",
+      "Plan evacuation routes with family"
+    ]
+  },
+  "1": {
+    "title": "Low Risk Precautions",
+    "tips": [
+      "Stay alert to weather updates",
+      "Prepare emergency kit (water, food, medicine)",
+      "Know location of nearest shelter",
+      "Secure important documents in waterproof bags",
+      "Charge mobile devices and keep powerbank ready",
+      "Keep emergency supplies accessible"
+    ]
+  },
+  "2": {
+    "title": "Medium Risk Actions",
+    "tips": [
+      "Pack emergency bag with essentials",
+      "Monitor weather alerts continuously",
+      "Move to higher ground if instructed",
+      "Help elderly and vulnerable community members",
+      "Avoid driving through flooded areas",
+      "Keep valuables and documents with you",
+      "Establish family meeting point"
+    ]
+  },
+  "3": {
+    "title": "High Risk - IMMEDIATE ACTION",
+    "tips": [
+      "⚠️ EVACUATE TO HIGHER GROUND IMMEDIATELY",
+      "Do not wait for official evacuation orders",
+      "Take essential documents and valuables",
+      "Help family and neighbors if safe",
+      "Call emergency services: 1122 if trapped",
+      "Do NOT attempt to cross flooded roads",
+      "Stay on high ground until all-clear given",
+      "Keep radio/phone on for updates"
+    ]
+  }
+}

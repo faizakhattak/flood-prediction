@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "district": "Swat",
+    "severity": 3,
+    "message": "High flood risk alert for Swat Valley. Heavy rainfall expected.",
+    "source": "NDMA",
+    "timestamp": "2024-01-24T10:00:00"
+  },
+  {
+    "id": 2,
+    "district": "Peshawar",
+    "severity": 1,
+    "message": "Light to moderate rainfall expected. Moderate caution advised.",
+    "source": "Met Office",
+    "timestamp": "2024-01-24T11:30:00"
+  }
+]
