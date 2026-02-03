@@ -5,7 +5,7 @@
 **Date Completed**: January 24, 2024  
 **Project Type**: Django Web Application + LSTM ML Model  
 **Coverage**: Khyber Pakhtunkhwa (KPK), Pakistan - 15 Districts  
-**Model Accuracy**: 90.51%  
+**Model Accuracy**: 86 
 **Status**: 🚀 Production Ready
 
 ---
@@ -175,24 +175,7 @@ http://localhost:8000/
 
 ---
 
-## 📈 MODEL PERFORMANCE
 
-### Accuracy Metrics
-- **Overall Accuracy**: 90.51%
-- **Precision (Avg)**: 0.91
-- **Recall (Avg)**: 0.91
-- **F1-Score (Avg)**: 0.91
-
-### Per-Class Performance
-```
-Risk Level      Precision  Recall   F1-Score   Support
-═══════════════════════════════════════════════════════
-No Risk (0)     0.97       0.90     0.94       511
-Low (1)         0.86       0.92     0.89       511
-Medium (2)      0.87       0.88     0.87       511
-High (3)        0.93       0.92     0.93       511
-═══════════════════════════════════════════════════════
-```
 
 ### Training Details
 - **Dataset**: 10,227 daily records
